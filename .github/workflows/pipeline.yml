@@ -28,7 +28,7 @@ jobs:
         run: echo "$COMMITS"
       - name: commit messages
         env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) && contains(join(github.event.commits.*.message, ' '), '#skip')}}
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message)}}
         run: echo "$COMMIT_MESSAGES"
 
       - uses: actions/setup-node@v4
@@ -55,7 +55,7 @@ jobs:
           wait-on: http://localhost:5000
 
       - name: "Deploy to Azure WebApp"
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
@@ -64,7 +64,7 @@ jobs:
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' && contains(join(github.event.commits.*.message, ' '), '#skip')}}
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip')}}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
