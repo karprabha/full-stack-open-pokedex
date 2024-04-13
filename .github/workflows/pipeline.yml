@@ -61,6 +61,29 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: The job has succeeded
+        if: ${{ success() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: Succeeded!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: The job has failed
+        if: ${{ failure() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: Test Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: The job has cancelled
+        if: ${{ cancelled() }}
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: warn
+          details: Cancelled!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
