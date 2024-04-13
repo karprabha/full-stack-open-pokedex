@@ -74,7 +74,7 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
-          details: Test Failed!
+          details: Failed!
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: The job has cancelled
         if: ${{ cancelled() }}
